@@ -467,34 +467,27 @@ export const childTask = task({
 
 ## Priority
 
-<!-- UNVERIFIED -->
-Action item: verify priority numeric range at `https://trigger.dev/docs/queue-concurrency`.
-
-Trigger.dev supports **run priority** to influence the order in which queued runs are dequeued. Higher-priority runs are picked up before lower-priority ones when a concurrency slot becomes available.
-
-Priority is set when triggering a run:
+Priority is a **time offset in seconds** that determines a run's effective position in the queue. When a concurrency slot opens, the platform dequeues the run with the highest effective wait time. Priority adds to that effective wait time.
 
 ```ts
-import { myTask } from "./trigger/my-task";
+// No priority (default = 0)
+await myTask.trigger({ foo: "bar" });
 
-// Higher priority number = picked up sooner
-await myTask.trigger(
-  { orderId: "rush-123" },
-  { priority: 100 }
-);
+// ... 8 seconds pass ...
 
-// Default priority
-await myTask.trigger(
-  { orderId: "normal-456" }
-);
+// This run will dequeue BEFORE the run above, because
+// priority: 10 makes it appear as if it's been waiting 10 seconds
+await myTask.trigger({ foo: "bar" }, { priority: 10 });
 ```
 
-Priority interacts with queues as follows:
+A priority of `3600` would dequeue before any unprioritized run triggered within the last hour.
 
+Key behaviors:
 - Priority applies **within a single queue**. Runs in different queues are scheduled independently.
-- When a concurrency slot opens, the highest-priority queued run in that queue is dequeued next.
-- Runs with the same priority are dequeued in FIFO order.
-- Priority does not preempt executing runs — it only affects the order of queued runs.
+- Priority does not preempt executing runs — it only affects dequeue order of queued runs.
+- Default priority is `0` (no offset).
+
+<!-- UNVERIFIED: Whether there is a maximum priority value is not specified in the docs. -->
 
 ---
 
