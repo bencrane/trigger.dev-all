@@ -35,7 +35,7 @@ This folder contains the reconciled canonical reference documentation for the Tr
 - `handleError` → `catchError` (current SDK hook name)
 - Machine presets corrected: `large-1x` = 4 vCPU / 8 GB, `large-2x` = 8 vCPU / 16 GB, 10 GB disk for all
 - Limits section fully replaced with verified values (concurrency, payloads, schedules, queue depth, rate limits, etc.)
-- Priority: "higher = picked up sooner, FIFO within same priority" (not "seconds offset")
+- Priority: time offset in seconds that shifts effective queue position (verified as seconds offset per source docs)
 - M2M trigger: `tasks.trigger("task-id", payload, options)` — 3 positional args
 - OOM retry (`retry.outOfMemory`) and `OutOfMemoryError` added
 - Metadata API: `metadata.decrement()`, `metadata.parent.set()`, `metadata.flush()` documented; `metadata.stream()` deprecated
